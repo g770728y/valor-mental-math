@@ -1,26 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import styles from './App.module.scss';
+import { observer } from 'mobx-react';
+import appStore from './AppStore';
+import ReadyScene from './scenes/ReadyScene';
+import ResultScene from './scenes/ResultScene';
+import FocusScene from './scenes/FocusScene';
 
 const App: React.FC = () => {
+  const status = appStore.status;
+  console.log(status);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={styles['container']}>
+      {status === 'ready' ? (
+        <ReadyScene />
+      ) : status === 'finished' ? (
+        <ResultScene />
+      ) : (
+        <FocusScene />
+      )}
     </div>
   );
-}
+};
 
-export default App;
+export default observer(App);
