@@ -1,8 +1,15 @@
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 
 type AppStatus = 'ready' | 'playing' | 'finished';
 
-type Hist = { round: number; x1: number; x2: number; result: number };
+type Hist = {
+  round: number;
+  x1: number;
+  x2: number;
+  result: number;
+  startTime: Date;
+  endTime?: Date;
+};
 
 class AppStore {
   @observable
@@ -20,8 +27,19 @@ class AppStore {
     x2: 0
   };
 
+  @computed
+  get totalTime() {
+    return this.history.reduce(
+      (acc, it) =>
+        acc + (it.endTime!.getTime() - it.startTime.getTime()) / 1000,
+      0
+    );
+  }
+
   @observable
   result = 0;
+
+  currentStartTime = new Date();
 
   @action
   reset = () => {
@@ -29,32 +47,37 @@ class AppStore {
     this.round = 0;
     this.formular = { x1: 0, x2: 0 };
     this.result = 0;
+    this.currentStartTime = new Date();
   };
 
   @action
   record = () => {
+    console.log('record');
     this.history.push({
       ...this.formular,
       round: this.round,
-      result: this.result
+      result: this.result,
+      startTime: this.currentStartTime,
+      endTime: new Date()
     });
   };
 
   @action
   nextCard = () => {
     this.round = this.round + 1;
+    this.currentStartTime = new Date();
 
     this.result = 0;
 
     this.formular = {
       x1: (Math.random() * 100) | 0,
-      x2: (Math.random() * 100) | 0
+      x2: (Math.random() * 10) | 0
     };
   };
 
   @action
   toggle = () => {
-    this.record();
+    this.round > 0 && this.record();
 
     if (this.history.length >= 10) {
       this.setStatus('finished');

@@ -14,7 +14,9 @@ const ReadyScene: React.FC = () => {
       <h1 className={styles['title']}>心算训练营</h1>
       <button
         className={styles['button']}
-        onClick={() => appStore.setStatus('playing')}
+        onClick={() => {
+          appStore.setStatus('playing');
+        }}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
       >
